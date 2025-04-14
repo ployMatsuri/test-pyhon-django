@@ -9,7 +9,7 @@ class School(models.Model):
     sch_id = models.AutoField(primary_key=True)
     sch_name = models.CharField(max_length=255)
     sch_code_name = models.CharField(max_length=255)
-    adress = models.TextField()
+    address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Classroom(models.Model):

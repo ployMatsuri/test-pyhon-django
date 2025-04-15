@@ -6,7 +6,11 @@ class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = School
         fields = ['sch_id', 'sch_name', 'sch_code_name', 'address', 'created_at', 'updated_on']
-    
+
+class SchoolSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = School
+        fields = ['sch_id', 'sch_name', 'sch_code_name', 'address',]
     
 class SchoolDetailSerializer(serializers.ModelSerializer):
     classroom_count = serializers.SerializerMethodField()
@@ -37,18 +41,11 @@ class ClassroomSimpleSerializer(serializers.ModelSerializer):
         fields = ['class_id', 'grade', 'room']
 
 class ClassroomDetailSerializer(serializers.ModelSerializer):
-    teacher_count = serializers.SerializerMethodField()
-    student_count = serializers.SerializerMethodField()
-
-    def get_teacher_count(self,obj):
-        return TeacherClassroom.objects.filter(classroom=obj).count()
-    
-    def get_student_count(self,obj):
-        return Student.objects.filter(class_id=obj).count()
+    school = SchoolSimpleSerializer(source='sch_id', read_only=True)
     
     class Meta:
         model = Classroom
-        fields = ['class_id','teacher_count','student_count']
+        fields = ['class_id','school']
 
 class TeacherSerializer(serializers.ModelSerializer):
     classroom_ids = serializers.ListField(

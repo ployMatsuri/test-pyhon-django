@@ -7,6 +7,7 @@ class SchoolSerializer(serializers.ModelSerializer):
         model = School
         fields = ['sch_id', 'sch_name', 'sch_code_name', 'address', 'created_at', 'updated_on']
     
+    
 class SchoolDetailSerializer(serializers.ModelSerializer):
     classroom_count = serializers.SerializerMethodField()
     teacher_count = serializers.SerializerMethodField()
@@ -30,6 +31,11 @@ class ClassroomSerializer(serializers.ModelSerializer):
         model = Classroom
         fields = ['class_id', 'sch_id', 'grade', 'room', 'created_at', 'updated_on']
 
+class ClassroomSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Classroom
+        fields = ['class_id', 'grade', 'room']
+
 class ClassroomDetailSerializer(serializers.ModelSerializer):
     teacher_count = serializers.SerializerMethodField()
     student_count = serializers.SerializerMethodField()
@@ -45,12 +51,51 @@ class ClassroomDetailSerializer(serializers.ModelSerializer):
         fields = ['class_id','teacher_count','student_count']
 
 class TeacherSerializer(serializers.ModelSerializer):
+    classroom_ids = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True, required=False
+    )
+
     class Meta:
         model = Teacher
-        fields = ['teacher_id', 'firstname', 'lastname', 'gender', 'created_at', 'updated_on']
+        fields = ['teacher_id', 'firstname', 'lastname', 'gender', 'created_at', 'updated_on', 'classroom_ids']
+
+    def create(self, validated_data):
+        classroom_ids = validated_data.pop('classroom_ids', [])
+        teacher = Teacher.objects.create(**validated_data)
+
+        for classroom_id in classroom_ids:
+            TeacherClassroom.objects.create(teacher=teacher, classroom_id=classroom_id)
+
+        return teacher
+    
+    def update(self, instance, validated_data):
+        classroom_ids = validated_data.pop('classroom_ids', None)
+        
+        if classroom_ids is not None:
+            TeacherClassroom.objects.filter(teacher=instance).delete()
+            
+            for classroom_id in classroom_ids:
+                classroom = Classroom.objects.get(class_id=classroom_id)
+                TeacherClassroom.objects.create(teacher=instance, classroom=classroom)
+        
+        return super().update(instance, validated_data)
+    
+class TeacherDetailSerializer(serializers.ModelSerializer):
+    classrooms = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teacher
+        fields = ['teacher_id', 'classrooms']
+
+    def get_classrooms(self, obj):
+        teacher_classrooms = TeacherClassroom.objects.filter(teacher=obj)
+        classrooms = [tc.classroom for tc in teacher_classrooms]
+        return ClassroomSimpleSerializer(classrooms, many=True).data
+    
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['student_id', 'class_id', 'firstname', 'lastname', 'gender', 'created_at', 'updated_on']
+
 

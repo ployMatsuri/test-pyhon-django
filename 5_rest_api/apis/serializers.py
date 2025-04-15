@@ -20,7 +20,28 @@ class SchoolDetailSerializer(serializers.ModelSerializer):
         return obj.classroom_set.count()
     
     def get_teacher_count(self,obj):
-        return sum(c.teacher_classroom_set.cout() for c in obj.classroom_set.all())
+        return sum(c.teacherclassroom_set.count() for c in obj.classroom_set.all())
     
     def get_student_count(self,obj):
         return sum(s.student_set.count() for s in obj.classroom_set.all())
+    
+class ClassroomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Classroom
+        fields = ['class_id', 'sch_id', 'grade', 'room', 'created_at', 'updated_on']
+
+class ClassroomDetailSerializer(serializers.ModelSerializer):
+    teacher_count = serializers.SerializerMethodField()
+    student_count = serializers.SerializerMethodField()
+
+    def get_teacher_count(self,obj):
+        return TeacherClassroom.objects.filter(classroom=obj).count()
+    
+    def get_student_count(self,obj):
+        return Student.objects.filter(class_id=obj).count()
+    
+    class Meta:
+        model = Classroom
+        fields = ['class_id','teacher_count','student_count']
+
+

@@ -32,6 +32,7 @@ class Teacher(models.Model):
 
 class Student(models.Model):
     student_id = models.AutoField(primary_key=True)
+    class_id = models.ForeignKey(Classroom,on_delete=models.CASCADE)
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     gender = models.CharField(max_length=25,choices=GENDER_CHOICES)

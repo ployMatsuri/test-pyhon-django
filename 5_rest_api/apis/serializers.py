@@ -44,4 +44,13 @@ class ClassroomDetailSerializer(serializers.ModelSerializer):
         model = Classroom
         fields = ['class_id','teacher_count','student_count']
 
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = ['teacher_id', 'firstname', 'lastname', 'gender', 'created_at', 'updated_on']
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['student_id', 'class_id', 'firstname', 'lastname', 'gender', 'created_at', 'updated_on']
 

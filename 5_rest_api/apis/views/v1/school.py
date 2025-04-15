@@ -1,5 +1,3 @@
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from apis.models import School
@@ -11,15 +9,7 @@ class SchoolViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = SchoolFilter
-
-    def update(self, request, *args, **kwargs):
-        try:
-            return super().update(request, *args, **kwargs)
-        except Exception as e:
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        
+     
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return SchoolDetailSerializer

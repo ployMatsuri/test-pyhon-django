@@ -5,7 +5,7 @@ from django.db.models import Count
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = School
-        fields = ['sch_id', 'sch_name', 'sch_code_name', 'address', 'created_at',]
+        fields = ['sch_id', 'sch_name', 'sch_code_name', 'address', 'created_at', 'updated_on']
     
 class SchoolDetailSerializer(serializers.ModelSerializer):
     classroom_count = serializers.SerializerMethodField()

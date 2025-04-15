@@ -41,11 +41,21 @@ class ClassroomSimpleSerializer(serializers.ModelSerializer):
         fields = ['class_id', 'grade', 'room']
 
 class ClassroomDetailSerializer(serializers.ModelSerializer):
-    school = SchoolSimpleSerializer(source='sch_id', read_only=True)
+    teachers = serializers.SerializerMethodField()
+    students = serializers.SerializerMethodField()
     
     class Meta:
         model = Classroom
-        fields = ['class_id','school']
+        fields = ['class_id','teachers','students']
+
+    def get_teachers(self, obj):
+        classroom_teachers = TeacherClassroom.objects.filter(classroom=obj)
+        teachers = [tc.teacher for tc in classroom_teachers]
+        return TeacherSimpleSerializer(teachers, many=True).data
+
+    def get_students(self, obj):
+        students = Student.objects.filter(class_id=obj)
+        return StudentSimpleSerializer(students, many=True).data
 
 class TeacherSerializer(serializers.ModelSerializer):
     classroom_ids = serializers.ListField(
@@ -77,6 +87,11 @@ class TeacherSerializer(serializers.ModelSerializer):
         
         return super().update(instance, validated_data)
     
+class TeacherSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = ['teacher_id', 'firstname', 'lastname', 'gender']
+    
 class TeacherDetailSerializer(serializers.ModelSerializer):
     classrooms = serializers.SerializerMethodField()
 
@@ -101,5 +116,11 @@ class StudentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['student_id', 'classrooms']
+
+class StudentSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['student_id', 'firstname', 'lastname', 'gender']
+
 
 

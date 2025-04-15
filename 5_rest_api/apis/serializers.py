@@ -98,4 +98,11 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ['student_id', 'class_id', 'firstname', 'lastname', 'gender', 'created_at', 'updated_on']
 
+class StudentDetailSerializer(serializers.ModelSerializer):
+    classrooms = ClassroomSimpleSerializer(source='class_id', read_only=True)
+
+    class Meta:
+        model = Student
+        fields = ['student_id', 'classrooms']
+
 

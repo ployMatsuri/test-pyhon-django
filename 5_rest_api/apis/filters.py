@@ -4,7 +4,7 @@ import django_filters
 
 
 class SchoolFilter(django_filters.FilterSet):
-    sch_name = django_filters.CharFilter(field_name='sch_name', lookup_expr='icontains')
+    sch_name = django_filters.CharFilter(field_name='sch_name')
 
     class Meta:
         model = School
@@ -27,15 +27,34 @@ class TeacherFilter(django_filters.FilterSet):
         field_name='teacherclassroom__classroom'
     )
     firstname = django_filters.CharFilter(
-        field_name='firstname', lookup_expr='icontains'
-    )
+        field_name='firstname')
     lastname = django_filters.CharFilter(
-        field_name='lastname', lookup_expr='icontains'
-    )
+        field_name='lastname')
     gender = django_filters.CharFilter(
-        field_name='gender', lookup_expr='iexact'
+        field_name='gender'
     )
 
     class Meta:
         model = Teacher
+        fields = []
+
+
+class StudentFilter(django_filters.FilterSet):
+    school = django_filters.ModelChoiceFilter(
+        queryset=School.objects.all(),
+        field_name='class_id__sch_id'
+    )
+    classroom = django_filters.ModelChoiceFilter(
+        queryset=Classroom.objects.all(),
+        field_name='class_id'
+    )
+    firstname = django_filters.CharFilter(
+        field_name='firstname')
+    lastname = django_filters.CharFilter(
+        field_name='lastname')
+    gender = django_filters.CharFilter(
+        field_name='gender')
+
+    class Meta:
+        model = Student
         fields = []

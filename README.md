@@ -44,7 +44,20 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-**3. Run the server:**
+**3. Set Up Admin Access**
+
+To manage data using the Django Admin panel, create a superuser:
+
+```
+python manage.py createsuperuser
+```
+
+Follow the prompts to set:
+- Username
+- Email 
+- Password
+
+**4. Run the server:**
 ```
 python manage.py runserver
 ```
